@@ -224,3 +224,4 @@ __marimo__/
 .emcache
 *.orig
 out.*
+.todo/

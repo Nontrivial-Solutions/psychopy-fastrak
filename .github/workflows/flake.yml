@@ -16,7 +16,7 @@ jobs:
               uses: DeterminateSystems/update-flake-lock@main
               with:
                   pr-title: "[❄️] Update flake.lock" # Title of PR to be created
-                  commit-msg: "chore: bump flake.lock"
+                  commit-msg: "CHORE: Bump flake.lock"
                   pr-labels: |
                       dependencies
                       automated

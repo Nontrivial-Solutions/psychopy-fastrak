@@ -30,6 +30,8 @@
           rumdl
         ];
 
+        TODO_DIR = "./.todo/";
+
         shellHook = ''
           prek install -f
           just bootstrap
