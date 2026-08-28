@@ -1,0 +1,288 @@
+"""PsychoPy component for calling a Fastrak in a routine."""
+
+from pathlib import Path
+
+from jinja2 import Environment, PackageLoader, select_autoescape
+from psychopy.experiment import Experiment
+from psychopy.experiment.components import BaseDeviceComponent, getInitVals
+from psychopy.experiment.devices import DeviceBackend
+from psychopy.experiment.exports import IndentingBuffer
+
+
+class FastrakComponent(BaseDeviceComponent):
+    """PsychoPy component for collecting streaming data from a Polhemus Fastrak."""
+
+    plugin = 'psychopy-fastrak'
+    targets = ['PsychoPy']
+    categories = ['Responses']
+    iconFile = Path(__file__).parent / 'icon.png'
+    iconSVG = Path(__file__).parent / 'icon.svg'
+    tooltip = 'Component for collecting streaming data from a Polhemus Fastrak.'
+    version = '2026.1.3'
+    beta = False
+
+    def __init__(
+        self,
+        exp: Experiment,
+        parentName: str,
+        name: str = 'fastrak',
+        startType: str = 'time (s)',
+        startVal: float = 0.0,
+        stopType: str = 'duration (s)',
+        stopVal: float | str = '',
+        deviceLabel: str = '',
+    ):
+        """Initialize a new component object for generating Fastrak experiment/routine code.
+
+        > [!warning]
+        > I'm guessing at the type hinting here. There's no documentation from PsychoPy for what
+        > the typing is.
+
+        Parameters
+        ----------
+        exp : Experiment
+            The experiment this object is associated with.
+
+        parentName : str
+            The name of the parent?
+
+            > [!warning]
+            > What this is doing is unclear. It seems to be how the routine that owns this object
+            > interacts with the object.
+
+        name : str
+            The name of this object.
+
+            > [!warning]
+            > This is linked to the actual variable name for the object.
+
+        startType : str
+            Indicates the type of start condition for the component.
+
+        startVal : float
+            The start "value" for the component.
+
+            > [!warning]
+            > In the `BaseComponent` this is type `code`. I don't know what that means beyond the.
+            > docstring from the Param class
+            > > - code: Some code, will be compiled verbatim or translated to JS (no ")
+
+        stopType : str
+            Indicates the type of stop condition for the component.
+
+        stopVal : float
+            The stop "value" for the component.
+
+            > [!warning]
+            > In the `BaseComponent` this is type `code`. I don't know what that means beyond the.
+            > docstring from the Param class
+            > > - code: Some code, will be compiled verbatim or translated to JS (no ")
+
+        deviceLabel : str
+            A label for the device.
+
+            > [!warning]
+            > In the `BaseComponent` this is type `device`. I don't know what that means beyond the.
+            > docstring from the Param class which says it's a `str`.
+        """
+        BaseDeviceComponent.__init__(
+            self,
+            exp,
+            parentName,
+            name=name,
+            startType=startType,
+            startVal=startVal,
+            stopType=stopType,
+            stopVal=stopVal,
+            deviceLabel=deviceLabel,
+        )
+
+        self.order += []
+        self.type = 'Fastrak'
+        self.url = 'https://psychopy-fastrak.nontrivialsolutions.org'
+
+        self._env = Environment(
+            loader=PackageLoader('psychopy_fastrak.components.fastrakComponent'),
+            autoescape=select_autoescape(),
+        )
+
+        self.exp.requireImport(
+            importName='FastrakWrapper',
+            importFrom='psychopy_fastrak.wrapper',
+        )
+
+    def _writeJinjaCode(self, buff: IndentingBuffer, params: dict, tmpltSource: str):
+        """Write to the experiment python file the Jinja template.
+
+        > [!note]
+        > Many of the other components (plugin or otherwise) use old style python string
+        > replacements. We use Jinja for easier configuration management.
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+
+        params : dict
+            A dictionary with replacement variables.
+
+        tmpltSource : str
+            The path to the jinja template to insert.
+        """
+        template = self._env.get_template(tmpltSource)
+        code = template.render(params)
+        buff.writeIndentedLines(code)
+
+    def _blockComment(self, buff: IndentingBuffer, content: str) -> None:
+        """Insert a block comment into the experiment python file.
+
+        > [!note]
+        > This only supports single line comments at the moment. A jinja for loop over the lines of
+        > content would support multiline block comments.
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+
+        content : str
+            The content of the block comment.
+
+        """
+        self._writeJinjaCode(buff, {'content': content}, 'blockComment.jinja')
+
+    def writeStartCode(self, buff):
+        """Write code that a component needs at the start of an experiment.
+
+        Reference the [experiment life cycle](/content/notes/explifecycle).
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        inits = getInitVals(self.params)
+        self._writeJinjaCode(buff, inits, 'start.jinja')
+
+    def writeInitCode(self, buff: IndentingBuffer):
+        """Write code that a component needs at the init of an experiment.
+
+        Reference the [experiment life cycle](/content/notes/explifecycle).
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        inits = getInitVals(self.params)
+        self._writeJinjaCode(buff, inits, 'init.jinja')
+
+    def writeRoutineStartCode(self, buff: IndentingBuffer):
+        """Write code that a component needs at the start of a routine.
+
+        Reference the [experiment life cycle](/content/notes/explifecycle).
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        self.writeParamUpdates(buff, updateType='set every repeat')
+        self._writeJinjaCode(buff, self.params.copy(), 'routineStart.jinja')
+
+    def writeFrameCode(self, buff: IndentingBuffer):
+        """Write code that a component needs during a frame of a routine.
+
+        Reference the [experiment life cycle](/content/notes/explifecycle).
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        # update any parameters which need updating
+        self.writeParamUpdates(buff, updateType='set every frame')
+
+        self._blockComment(buff, f'{self.params["name"]} start frame')
+        indent = self.writeStartTestCode(buff)
+        if indent:
+            self._writeJinjaCode(buff, self.params.copy(), 'firstFrame.jinja')
+            buff.setIndentLevel(-indent, relative=True)
+
+        self._blockComment(buff, f'{self.params["name"]} active frame')
+        indent = self.writeActiveTestCode(buff)
+        if indent:
+            self._writeJinjaCode(buff, self.params.copy(), 'activeFrame.jinja')
+            buff.setIndentLevel(-indent, relative=True)
+
+        self._blockComment(buff, f'{self.params["name"]} stop frame')
+        indent = self.writeStopTestCode(buff)
+        if indent:
+            self._writeJinjaCode(buff, self.params.copy(), 'finalFrame.jinja')
+            buff.setIndentLevel(-indent, relative=True)
+
+        self._blockComment(buff, f'End {self.params["name"]} frame updates')
+
+    def writeRoutineEndCode(self, buff: IndentingBuffer):
+        """Write code that a component needs at the end of a routine.
+
+        Reference the [experiment life cycle](/content/notes/explifecycle).
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        # create a copy of params so that we can safely edit stuff
+        self._writeJinjaCode(buff, self.params.copy(), 'routineEnd.jinja')
+
+
+class FastrakDeviceBackend(DeviceBackend):
+    """In the GUI configurator this represents an available 'backend' for an object.
+
+    Attributes
+    ----------
+    backendLabel : str
+        The label for the backend that will appear in the configurator.
+    component : object
+        The associated component for the backend.
+    deviceClass : str
+        The hardware device this backend represents.
+    icon : str
+        The icon to appear in the configurator.
+    """
+
+    backendLabel: str = 'Fastrak'
+    component: object = FastrakComponent
+    deviceClass: str = 'psychopy_fastrak.hardware.FastrakHardwareDevice'
+    icon: str = 'light/icon.png'
+
+    def __init__(self, profile):
+        """Initialize a Fastrak device backend.
+
+        Parameters
+        ----------
+        profile : object?
+            Not sure what this is or does. It doesn't seem to be documented anywhere but it is
+            expected.
+        """
+        DeviceBackend.__init__(self, profile)
+        self.order += [
+            'name',
+        ]
+
+    def writeDeviceCode(self, buff: IndentingBuffer):
+        """Write code that the hardware device needs to be registered by PsychoPy during an experiment.
+
+        > [!note]
+        > This is a `DeviceBackend` interface.
+
+        Parameters
+        ----------
+        buff : IndentingBuffer
+            The output experiment python file buffer.
+        """
+        self.writeBaseDeviceCode(buff, close=True)
+
+
+FastrakComponent.registerBackend(FastrakDeviceBackend)

@@ -13,6 +13,11 @@ dependencies = [
 ]
 dynamic = ["version"]  # Remove any static version = "..." line
 
+[project.entry-points."psychopy.experiment.components"]
+# if you want a Component to appear in the "Components" panel, add its class here
+FastrakComponent = "psychopy_fastrak.components.fastrakComponent:FastrakComponent"
+FastrakDeviceBackend = "psychopy_fastrak.components.fastrakComponent:FastrakDeviceBackend"
+
 [dependency-groups]
 dev = [
   "cairosvg>=2.9.0",
