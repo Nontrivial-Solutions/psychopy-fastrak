@@ -18,6 +18,11 @@ dynamic = ["version"]  # Remove any static version = "..." line
 FastrakComponent = "psychopy_fastrak.components.fastrakComponent:FastrakComponent"
 FastrakDeviceBackend = "psychopy_fastrak.components.fastrakComponent:FastrakDeviceBackend"
 
+[project.entry-points."psychopy.hardware"]
+# if you want something to be importable from psychopy.hardware, add it here
+FastrakHardwareDevice = "psychopy_fastrak.hardware:FastrakHardwareDevice"
+FastrakResponse = "psychopy_fastrak.hardware:FastrakResponse"
+
 [dependency-groups]
 dev = [
   "cairosvg>=2.9.0",
