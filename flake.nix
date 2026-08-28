@@ -28,6 +28,9 @@
           uv
           wget
           rumdl
+          jinja-lsp
+          ty
+          ruff
         ];
 
         TODO_DIR = "./.todo/";
