@@ -1,25 +1,33 @@
 ---
-title: Lab tooling
+title: Fastrak PsychoPy Plugin 
 authors:
   - joe_starr
 ---
 
-![hero](./infra/assets/logo.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![White Logo image](https://brainmade.org/white-logo.svg){width=10%}](https://brainmade.org)
 
-[![White Logo image](https://brainmade.org/white-logo.svg)](https://brainmade.org)
+![hero](./infra/assets/logo.svg){width=100%}
+
+/// caption
+
+///
 
 ## Note to Reader
 
 ### What Am I?
 
+This repository contains [PsychoPy](https://psychopy.org) plugin tooling to enable use of the
+[Polhemus Fastrak](https://polhemus.com/all-trackers/fastrak) in experiments.
+
 ### About the Documentation
 
-The following document describes the "rules" and expectation for the tool. The
-["Code Comments"](./lib/files/) page contains the technical context descriptions found in the source
-files. The ["Use Cases"](./use_cases/) page contains a collection of use cases and a use case
-diagram for the tool. The ["Decisions"](./madr/) page contains a collection of
-[architectural decision records](https://adr.github.io/madr/) [@Kopp2018] giving context on why this
-tool is the way it is.
+The following document describes the "rules" and expectation for development. The
+["API Reference"](./reference//) page contains the technical context descriptions found in the
+source files. The ["Use Cases"](./content/usecase/usecase) page contains a collection of use cases
+and a use case diagram for the tool. The ["Decisions"](./content/madr/) page contains a collection
+of [architectural decision records](https://adr.github.io/madr/) [@Kopp2018] giving context on why
+this tool is the way it is.
 
 ### Issues
 
@@ -69,15 +77,55 @@ Files and directories shall be lower case, where capital is not required by a to
 `' '`.
 
 ```text
-
-
+📁 .
+├── 📁 .github
+│   ├── 📁 ISSUE_TEMPLATE
+│   ├── 📁 PULL_REQUEST_TEMPLATE
+│   ├── 📁 workflows
+│   └── 📝 pull_request_template.md
+├── 📁 .vscode
+│   └── ⚙️ launch.json
+├── 📁 docs
+│   ├── 📁 content
+│   │   ├── 📁 madr
+│   │   └── 📁 units
+│   ├── 📁 infra
+│   └── 📖 README.md
+├── 📁 psychopy_fastrak 
+│   ├── 📁 component 
+│   ├── 📁 hardware 
+│   ├── 📁 wrapper 
+│   └── 🐍 __init__.py
+├── 📁 test 
+│   ├── 📁 component 
+│   ├── 📁 hardware 
+│   ├── 📁 wrapper 
+│   ├── 🐍 test_<unit>.py 
+│   └── 🐍 __init__.py
+├── ⚙️ .editorconfig
+├── 🙈 .gitignore
+├── 🛠️ .pre-commit-config.yaml
+├── ⚙️ .rumdl.toml
+├── ❄️ flake.lock
+├── ❄️ flake.nix
+├── 🛠️ Justfile
+├── 📜 LICENSE
+├── 📄 mkdocs.yml
+├── 🐍 pyproject.toml
+└── 🔒 uv.lock
 ```
 
 ### Directories of Interest
 
-- Docs: This directory contains the high level documentation for the tool.
+- docs: This directory contains the high level documentation for the tool.
+- psychopy_fastrak : This directory contains the source code of the tool.
+- test: This directory contains the test code of the tool.
+- .github: This directory contains the GitHub infrastructure.  
+- .vscode: This directory contains the debugger configuration.  
 
 ### Define a Unit
+
+A unit shall be a Python module.
 
 ### Quality
 
@@ -86,13 +134,20 @@ must be detectable. A segfault is okay, an off by one error that computes the wr
 
 #### Unit Testing
 
+Each internal unit shall have a unit test suite.
+
 #### Integration Testing
+
+The plugin shall have manual integration testing.
 
 ### Requirements
 
-#### Functional Requirements
+Each internal unit shall have a unit test suite.
 
-##### Use Cases  
+#### Use Cases
+
+Requirements are documented by [ADR](./content/madr/index.md). Use cases are omitted as they follow
+the PsychoPy plugin design requirements.
 
 ##### Architectural Decisions
 
@@ -120,6 +175,10 @@ The following is the order of operations for the proposal of a MADR:
     - "accepted" and pull the branch into main branch
     - "rejected" and pull the branch into main branch
 
+> [!note]
+>
+> The initial round of ADR are decoupled from PR and are numbered sequentially starting from zero.
+
 #### Nonfunctional Requirements
 
 ##### Colors
@@ -132,6 +191,8 @@ the [COLORS](https://clrs.cc) color palette.
 ###### Languages and Frameworks
 
 - git
+- Python
+- PsychoPy
 - mermaid.js
 - prek
 - tombi
@@ -143,3 +204,134 @@ the [COLORS](https://clrs.cc) color palette.
 ###### Documentation of Implementation
 
 ###### Code Style Guide
+
+Python code shall be formatted with ruff using the included style settings. Markdown files shall be
+formatted with rumdl using the included style settings. TOML files shall be formatted with tombi
+using the included style settings.
+
+## Design and Documentation
+
+### System
+
+#### Block Diagram
+
+```mermaid
+flowchart LR
+    subgraph External
+    fsd@{ shape: paper-tape, label: "Fastrak Serial Driver"}
+    psy@{ shape: paper-tape, label: "PsychoPy Core Configurator"}
+    psyr@{ shape: paper-tape, label: "PsychoPy Core Runner"}
+    ec@{ shape: paper-tape, label: "External Component"}
+    gen@{ shape: docs, label: "Generated Code"}
+    gen---|*..1|psyr
+    end
+
+    subgraph Internal 
+    subgraph Component 
+    cm["PsychoPy Component"]
+    db["Device Backend"]
+    cm -- uses -->db
+    cm -- creates -->gen
+    end
+    subgraph Hardware 
+    bhd["Base Hardware Device"]
+    res["Device Response"]
+    bhd-- uses -->res
+    ec-- consumes -->res
+    bhd-- uses -->fsd
+    end
+    subgraph Wrapper 
+    dw["Device Wrapper"]
+    dw-- uses -->bhd
+    end
+
+    cm---|*..1|psy
+    db---|*..1|psy
+    bhd---|*..1|psyr
+    dw---|*..1|gen
+    end
+
+
+
+```
+
+#### Class Diagram
+
+```mermaid
+classDiagram
+
+    FastrakDevice o-- SerialCommandsWithResp
+    FastrakDevice o-- SerialCommands
+    FastrakDevice o-- Support 
+    FastrakDevice *-- PollStream 
+    FastrakDevice o-- FastrakPosition 
+    PollStream o-- Command
+
+    SerialCommandsWithResp o-- Support 
+    SerialCommands o-- Support 
+
+    CommandWithResponse --|> Command
+    CommandWithResponse <|.. SerialCommandsWithResp
+    Command <|.. SerialCommands
+
+    class FastrakPosition{
+        + void parseValidPosition(dataPacket)
+        + float  x
+        + float  y
+        + float  z
+        + float  psi
+        + float  theta
+        + float  phi
+    }
+
+    class PollStream{
+        + void __init__(baudrate,station,timeout,setup)
+        + void stop()
+        + void run()
+        + void clearBuffer()
+        + bytes data 
+        + FastrakPosition lastPosition 
+        - serial ser
+        - Thread thread
+    }
+
+    class FastrakDevice{
+        + void __init__(baudrate,station,timeout,setup)
+        + void connect()
+        + void enableStream()
+        + void disableStream()
+        + void readLine()
+        + void boresight()
+        + void basicSetup()
+        + void clearBuffer()
+        + void create_valid_device()
+        + bytes data 
+        + FastrakPosition lastPosition 
+        - serial ser
+        - bool isBinary
+        - FastrakStation station
+        - bool running
+        - PollStream thread
+        - baudrate baud
+    }
+
+    class Command{<<interface>>}
+    class CommandWithResponse{<<interface>>}
+    class Support{<<collection>>}
+    class SerialCommands{<<collection>>}
+    class SerialCommandsWithResp{<<collection>>}
+
+    note for Support "A collection of enum and data supporting classes."
+    note for SerialCommands "A collection of serial commands for the Fastrak."
+    note for SerialCommandsWithResp "A collection of serial commands with a response for the Fastrak."
+
+
+```
+
+#### Unit Designs
+
+Unit designs (and test description) for the FastrakDevice and FastrakPosition unit (public members
+and methods) is found under [Unit Designs](./content/units). Designs for other units (commands and
+supporting classes) are omitted.
+
+##### Code Style Guide

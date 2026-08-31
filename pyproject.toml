@@ -1,6 +1,6 @@
 [project]
 name = "psychopy-fastrak"
-description = """This repository contains a [Psychopy](https://psychopy.org/) plugin implementing a
+description = """This repository contains a [PsychoPy](https://PsychoPy.org/) plugin implementing a
         [component](https://psychopy.org/builder/components/index.html#components) exposing tacking data
         from a [Fastrak](https://polhemus.com/all-trackers/fastrak) tracking device. 
         """
