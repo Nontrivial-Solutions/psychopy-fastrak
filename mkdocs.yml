@@ -55,10 +55,11 @@ watch:
 
 nav:
     - Home: README.md
-    - Data Dictionary: content/dd/index.md
     - Development Notes:
           - content/notes/index.md
           - content/notes
+          - Data Dictionary:
+                - content/notes/dd/index.md
     - Use Cases:
           - content/usecase/index.md
           - content/usecase

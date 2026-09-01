@@ -175,10 +175,6 @@ The following is the order of operations for the proposal of a MADR:
     - "accepted" and pull the branch into main branch
     - "rejected" and pull the branch into main branch
 
-> [!note]
->
-> The initial round of ADR are decoupled from PR and are numbered sequentially starting from zero.
-
 #### Nonfunctional Requirements
 
 ##### Colors
@@ -260,78 +256,61 @@ flowchart LR
 ```mermaid
 classDiagram
 
-    FastrakDevice o-- SerialCommandsWithResp
-    FastrakDevice o-- SerialCommands
-    FastrakDevice o-- Support 
-    FastrakDevice *-- PollStream 
-    FastrakDevice o-- FastrakPosition 
-    PollStream o-- Command
+BaseDeviceComponent <|-- FastrakComponent
+DeviceBackend <|-- FastrakDeviceBackend
+BaseResponse <|-- FastrakResponse
+BaseResponseDevice <|-- FastrakHardwareDevice
+FastrakWrapper --> FastrakHardwareDevice 
+FastrakResponse--> FastrakHardwareDevice 
+FastrakDeviceBackend --> FastrakComponent 
+FastrakComponent --> FastrakWrapper
 
-    SerialCommandsWithResp o-- Support 
-    SerialCommands o-- Support 
 
-    CommandWithResponse --|> Command
-    CommandWithResponse <|.. SerialCommandsWithResp
-    Command <|.. SerialCommands
+class FastrakWrapper {
++ int status
++ bool is\_streaming
+- init(device, outputDir) 
++ reset(outputDir) 
++ dispatchMessages() 
++ startup() 
++ startStream() 
++ endStream() 
++ saveRecording(thisExp, baseDir)
+}
 
-    class FastrakPosition{
-        + void parseValidPosition(dataPacket)
-        + float  x
-        + float  y
-        + float  z
-        + float  psi
-        + float  theta
-        + float  phi
-    }
+class FastrakHardwareDevice {
++ bool is\_locked
+- init() 
+- getStation(station) 
+- getBaud(baud)
++ isSameDevice(other) 
++ getAvailableDevices()
++ dispatchMessages(clear)
++ startup() 
++ clearBuffer() 
++ startStream() 
++ endStream() 
++ lock() 
++ unlock() 
+}
 
-    class PollStream{
-        + void __init__(baudrate,station,timeout,setup)
-        + void stop()
-        + void run()
-        + void clearBuffer()
-        + bytes data 
-        + FastrakPosition lastPosition 
-        - serial ser
-        - Thread thread
-    }
+class FastrakResponse {
+}
 
-    class FastrakDevice{
-        + void __init__(baudrate,station,timeout,setup)
-        + void connect()
-        + void enableStream()
-        + void disableStream()
-        + void readLine()
-        + void boresight()
-        + void basicSetup()
-        + void clearBuffer()
-        + void create_valid_device()
-        + bytes data 
-        + FastrakPosition lastPosition 
-        - serial ser
-        - bool isBinary
-        - FastrakStation station
-        - bool running
-        - PollStream thread
-        - baudrate baud
-    }
+class FastrakDeviceBackend {
+- init(profile) 
++ writeDeviceCode(buff) 
+}
 
-    class Command{<<interface>>}
-    class CommandWithResponse{<<interface>>}
-    class Support{<<collection>>}
-    class SerialCommands{<<collection>>}
-    class SerialCommandsWithResp{<<collection>>}
-
-    note for Support "A collection of enum and data supporting classes."
-    note for SerialCommands "A collection of serial commands for the Fastrak."
-    note for SerialCommandsWithResp "A collection of serial commands with a response for the Fastrak."
-
+class FastrakComponent {
+- init(exp, parentName, name, startType, startVal, stopType, stopVal, deviceLabel)
+- writeJinjaCode(buff , params, tmpltSource) 
+- blockComment(buff , content) 
++ writeStartCode(buff)
++ writeInitCode(buff) 
++ writeRoutineStartCode(buff) 
++ writeFrameCode(buff) 
++ writeRoutineEndCode(buff) 
+}
 
 ```
-
-#### Unit Designs
-
-Unit designs (and test description) for the FastrakDevice and FastrakPosition unit (public members
-and methods) is found under [Unit Designs](./content/units). Designs for other units (commands and
-supporting classes) are omitted.
-
-##### Code Style Guide

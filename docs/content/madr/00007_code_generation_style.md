@@ -2,7 +2,7 @@
 title: 00007 Code Generation Style/Handling  
 authors:
   - joe_starr
-status: deprecated
+status: accepted 
 date: 2026-08-31
 ---
 
