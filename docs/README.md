@@ -146,8 +146,37 @@ Each internal unit shall have a unit test suite.
 
 #### Use Cases
 
-Requirements are documented by [ADR](./content/madr/index.md). Use cases are omitted as they follow
-the PsychoPy plugin design requirements.
+Requirements are documented by [ADR](./content/madr/index.md). Use cases outside of generated code
+are omitted as they follow the PsychoPy plugin design requirements.
+
+```mermaid
+flowchart LR
+  aU["👤 User"]
+  aT["👤 Time"]
+
+  UF(["Use Fastrak"])
+  SF(["Stream Fastrak"])
+  SuF(["Setup Fastrak"])
+  RF(["Reset Fastrak"])
+  CS(["Conclude Stream"])
+  SD(["Save Data"])
+  PP(["Publish Position"])
+
+  aU --> UF 
+  aT --> UF
+  aT --> SuF 
+  aT --> SF 
+  aT --> RF 
+  aT --> CS 
+  aT --> SD 
+  aT --> PP 
+
+  UF -. include .-> SF 
+  UF -. include .-> SuF 
+  UF -. include .-> RF 
+  UF -. include .-> CS 
+  UF -. include .-> SD 
+```
 
 ##### Architectural Decisions
 

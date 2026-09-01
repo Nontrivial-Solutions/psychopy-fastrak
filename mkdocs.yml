@@ -61,8 +61,11 @@ nav:
           - Data Dictionary:
                 - content/notes/dd/index.md
     - Use Cases:
-          - content/usecase/index.md
-          - content/usecase
+          - content/usecase/usecase/index.md
+          - content/usecase/usecase
+          - Actors:
+                - content/usecase/actors/index.md
+                - content/usecase/actors
     - Architectural Decision Records:
           - content/madr/index.md
           - content/madr
