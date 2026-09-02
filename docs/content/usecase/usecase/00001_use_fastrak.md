@@ -1,5 +1,5 @@
 ---
-title: 00001 Send Command
+title: 00001 Use a Fastrak in an Experiment
 authors:
   - joe_starr
 status: high
@@ -7,32 +7,36 @@ status: high
 
 ## Goals
 
-The use case models the sending of a single command to a Fastrak.  
+The use case models the use of Fastrak device during a [routine][DD_RTN].
 
 ### Happy Outcome
 
-When the use case completes successfully a command is issued to the Fastrak.  
+When the use case completes successfully a streaming session is completed with the Fastrak.
 
-### Sad Outcome
+#### Sad Outcome
 
 When the use case completes unsuccessfully a failure is handled.
 
-## Preconditions
+### Preconditions
 
-- A serial device is connected.
+- A Fastrak device is physically connected.
 
-## Actors
+### Actors
 
 - [User](../actors/00001_user.md)
+- [Time](../actors/00002_time.md)
 
-## Trigger
+### Trigger
 
-A user sends a serial command to the device.
+A user begins an experiment containing a [routine][DD_RTN] which uses a Fastrak.
 
-## Scenario
+### Scenario
 
-1. The serial device is verified
-1. The serial command is sent
+1. The Fastrak is connected
+1. The Fastrak is set up
+1. Fastrak stream is begun
+1. Fastrak stream is concluded
+1. Fastrak stream is saved
+1. The Fastrak is reset
 1. An error occurs:
     1. Set error state
-    1. Report a disconnect error

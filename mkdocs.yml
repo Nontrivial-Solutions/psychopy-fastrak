@@ -136,3 +136,7 @@ extra:
         accepted: Accepted Decision
         happy: This test is on the happy path
         unhappy: This test is on the unhappy path
+        critical: The use case is so important that missing it means the product isn't just incomplete it's straight up unusable. The use case should be realized before anything else.
+        high: The use case is important for the product, missing this use case means the product is incomplete. The use case must be realized.
+        medium: The use case is needed for the product but not a showstopper. The use case should be realized when practical.
+        low: The use case would be useful but everything else should be completed before it is realized.
