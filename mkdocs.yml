@@ -32,6 +32,7 @@ theme:
         - navigation.tabs.sticky
         - navigation.sections
         - navigation.indexes
+        - navigation.expand
         - toc.follow
         - navigation.top
         - content.code.copy
@@ -53,25 +54,6 @@ extra_javascript:
 watch:
     - docs
 
-nav:
-    - Home: README.md
-    - Development Notes:
-          - content/notes/index.md
-          - content/notes
-          - Data Dictionary:
-                - content/notes/dd/index.md
-    - Use Cases:
-          - content/usecase/usecase/index.md
-          - content/usecase/usecase
-          - Actors:
-                - content/usecase/actors/index.md
-                - content/usecase/actors
-    - Architectural Decision Records:
-          - content/madr/index.md
-          - content/madr
-    - Tests:
-          - content/tests/index.md
-          - content/tests
 plugins:
     - search:
     - autorefs:
@@ -79,9 +61,6 @@ plugins:
           bib_file: "docs/infra/ref.bib"
     - authors:
           authors_file: "infra/.authors.yml"
-    - include_dir_to_nav:
-          file_pattern: '\d{4}.*\.md$'
-          recurse: False
     - mkdocstrings:
           handlers:
               python:
@@ -94,6 +73,7 @@ plugins:
                       docstring_section_style: spacy
     - api-autonav:
           modules: ["./src/", "./test"]
+    - awesome-nav
 markdown_extensions:
     - attr_list
     - footnotes

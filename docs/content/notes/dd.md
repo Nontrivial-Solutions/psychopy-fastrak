@@ -34,6 +34,11 @@ authors:
 > 1. A logical flow used by a [configurator][DD_CFG] to generate an [experiment file][DD_EXPPY].
 > 1. A logical flow used during an [experiment][DD_EXP] to control/communicate with the connected hardware.  
 
+> [!definition] "Frame[](){#DD_FRM}"
+>
+> In a PsychoPy [routine][DD_RTN] components are polled and triggered within an event loop. Steps in
+> this even loop are called "frames".
+
 ### GUI/Building Experiments
 
 > [!definition] "Configurator[](){#DD_CFG}"
