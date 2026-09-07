@@ -32,6 +32,31 @@ a component object. Each instance contains individually specific metadata.
 
 Instances of component objects in the configurator begin life at one of two times. The earliest is
 when the experiment configuration file is loaded. At load time an instance of each object in each
-routine is created in memory. The second time an object can be created is when a component is added
+routine is created. The second time an object can be created is when a component is added to a
+routine.
+
+Once an object is created it can be modified within the component option menu (Figure 3).
+
+![component options](./options.png)
+/// caption
+[](){#fig3-options}
+Figure 3: Configuration options  
+///
+
+Component instances are only destroyed when removed from a routine or the configurator is closed.
+
+### Naming
+
+Each configured component must be given an experiment scoped unique name. This includes components
+which live in two separate routines.
 
 ## Post-Generation
+
+Post generation components are the "functional" components within an experiment script.
+
+### Experiment Component Instance Lifespan
+
+Within an experiment script a component follows the general lifespan seen in the
+[experiment life cycle](../0000_exp_lifecycle). The only important edge case to note for the life of
+a component is how PsychoPy handles the reuse of names during an experiment (handled in
+[ADR 00004](../../madr/00004_reuse.md)).
