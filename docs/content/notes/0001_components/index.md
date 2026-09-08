@@ -58,5 +58,21 @@ Post generation components are the "functional" components within an experiment 
 
 Within an experiment script a component follows the general lifespan seen in the
 [experiment life cycle](../0000_exp_lifecycle). The only important edge case to note for the life of
-a component is how PsychoPy handles the reuse of names during an experiment (handled in
-[ADR 00004](../../madr/00004_reuse.md)).
+a component in this context is the reuse of names (discussed in
+[ADR 00004](../../madr/00004_reuse.md)). As seen in [Figure 4][fig4-flow], a PsychoPy experiment
+flow can contain multiple instances of the same routine (looped or not).  
+
+![Flow](./flow.png)
+/// caption
+[](){#fig4-flow}
+Figure 4: Experiment flow containing loops and reused routines 
+///
+
+When the routine seen in [Figure 4][fig4-flow] is generated into a PsychoPy experiment each instance
+of `trial` generates the same experimental code. In practice this means that each instance of
+`trial` uses the exact same variable names with zero encapsulation.
+
+> [!Note]
+>
+> A better design for this would be to use/register callbacks into the functional component code
+> rather than regenerating for each instance.
