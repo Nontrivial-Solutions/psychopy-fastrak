@@ -1,25 +1,33 @@
 ---
-title: Lab tooling
+title: Fastrak PsychoPy Plugin 
 authors:
   - joe_starr
 ---
 
-![hero](./infra/assets/logo.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![White Logo image](https://brainmade.org/white-logo.svg){width=10%}](https://brainmade.org)
 
-[![White Logo image](https://brainmade.org/white-logo.svg)](https://brainmade.org)
+![hero](./infra/assets/logo.svg){width=100%}
+
+/// caption
+
+///
 
 ## Note to Reader
 
 ### What Am I?
 
+This repository contains [PsychoPy](https://psychopy.org) plugin tooling to enable use of the
+[Polhemus Fastrak](https://polhemus.com/all-trackers/fastrak) in experiments.
+
 ### About the Documentation
 
-The following document describes the "rules" and expectation for the tool. The
-["Code Comments"](./lib/files/) page contains the technical context descriptions found in the source
-files. The ["Use Cases"](./use_cases/) page contains a collection of use cases and a use case
-diagram for the tool. The ["Decisions"](./madr/) page contains a collection of
-[architectural decision records](https://adr.github.io/madr/) [@Kopp2018] giving context on why this
-tool is the way it is.
+The following document describes the "rules" and expectation for development. The
+["API Reference"](./reference//) page contains the technical context descriptions found in the
+source files. The ["Use Cases"](./content/usecase/usecase) page contains a collection of use cases
+and a use case diagram for the tool. The ["Decisions"](./content/madr/) page contains a collection
+of [architectural decision records](https://adr.github.io/madr/) [@Kopp2018] giving context on why
+this tool is the way it is.
 
 ### Issues
 
@@ -69,15 +77,55 @@ Files and directories shall be lower case, where capital is not required by a to
 `' '`.
 
 ```text
-
-
+📁 .
+├── 📁 .github
+│   ├── 📁 ISSUE_TEMPLATE
+│   ├── 📁 PULL_REQUEST_TEMPLATE
+│   ├── 📁 workflows
+│   └── 📝 pull_request_template.md
+├── 📁 .vscode
+│   └── ⚙️ launch.json
+├── 📁 docs
+│   ├── 📁 content
+│   │   ├── 📁 madr
+│   │   └── 📁 units
+│   ├── 📁 infra
+│   └── 📖 README.md
+├── 📁 psychopy_fastrak 
+│   ├── 📁 component 
+│   ├── 📁 hardware 
+│   ├── 📁 wrapper 
+│   └── 🐍 __init__.py
+├── 📁 test 
+│   ├── 📁 component 
+│   ├── 📁 hardware 
+│   ├── 📁 wrapper 
+│   ├── 🐍 test_<unit>.py 
+│   └── 🐍 __init__.py
+├── ⚙️ .editorconfig
+├── 🙈 .gitignore
+├── 🛠️ .pre-commit-config.yaml
+├── ⚙️ .rumdl.toml
+├── ❄️ flake.lock
+├── ❄️ flake.nix
+├── 🛠️ Justfile
+├── 📜 LICENSE
+├── 📄 mkdocs.yml
+├── 🐍 pyproject.toml
+└── 🔒 uv.lock
 ```
 
 ### Directories of Interest
 
-- Docs: This directory contains the high level documentation for the tool.
+- docs: This directory contains the high level documentation for the tool.
+- psychopy_fastrak : This directory contains the source code of the tool.
+- test: This directory contains the test code of the tool.
+- .github: This directory contains the GitHub infrastructure.  
+- .vscode: This directory contains the debugger configuration.  
 
 ### Define a Unit
+
+A unit shall be a Python module.
 
 ### Quality
 
@@ -86,13 +134,49 @@ must be detectable. A segfault is okay, an off by one error that computes the wr
 
 #### Unit Testing
 
+Each internal unit shall have a unit test suite.
+
 #### Integration Testing
+
+The plugin shall have manual integration testing.
 
 ### Requirements
 
-#### Functional Requirements
+Each internal unit shall have a unit test suite.
 
-##### Use Cases  
+#### Use Cases
+
+Requirements are documented by [ADR](./content/madr/index.md). Use cases outside of generated code
+are omitted as they follow the PsychoPy plugin design requirements.
+
+```mermaid
+flowchart LR
+  aU["👤 User"]
+  aT["👤 Time"]
+
+  UF(["Use Fastrak"])
+  SF(["Stream Fastrak"])
+  SuF(["Setup Fastrak"])
+  RF(["Reset Fastrak"])
+  CS(["Conclude Stream"])
+  SD(["Save Data"])
+  PP(["Publish Position"])
+
+  aU --> UF 
+  aT --> UF
+  aT --> SuF 
+  aT --> SF 
+  aT --> RF 
+  aT --> CS 
+  aT --> SD 
+  aT --> PP 
+
+  UF -. include .-> SF 
+  UF -. include .-> SuF 
+  UF -. include .-> RF 
+  UF -. include .-> CS 
+  UF -. include .-> SD 
+```
 
 ##### Architectural Decisions
 
@@ -132,6 +216,8 @@ the [COLORS](https://clrs.cc) color palette.
 ###### Languages and Frameworks
 
 - git
+- Python
+- PsychoPy
 - mermaid.js
 - prek
 - tombi
@@ -143,3 +229,117 @@ the [COLORS](https://clrs.cc) color palette.
 ###### Documentation of Implementation
 
 ###### Code Style Guide
+
+Python code shall be formatted with ruff using the included style settings. Markdown files shall be
+formatted with rumdl using the included style settings. TOML files shall be formatted with tombi
+using the included style settings.
+
+## Design and Documentation
+
+### System
+
+#### Block Diagram
+
+```mermaid
+flowchart LR
+    subgraph External
+    fsd@{ shape: paper-tape, label: "Fastrak Serial Driver"}
+    psy@{ shape: paper-tape, label: "PsychoPy Core Configurator"}
+    psyr@{ shape: paper-tape, label: "PsychoPy Core Runner"}
+    ec@{ shape: paper-tape, label: "External Component"}
+    gen@{ shape: docs, label: "Generated Code"}
+    gen---|*..1|psyr
+    end
+
+    subgraph Internal 
+    subgraph Component 
+    cm["PsychoPy Component"]
+    db["Device Backend"]
+    cm -- uses -->db
+    cm -- creates -->gen
+    end
+    subgraph Hardware 
+    bhd["Base Hardware Device"]
+    res["Device Response"]
+    bhd-- uses -->res
+    ec-- consumes -->res
+    bhd-- uses -->fsd
+    end
+    subgraph Wrapper 
+    dw["Device Wrapper"]
+    dw-- uses -->bhd
+    end
+
+    cm---|*..1|psy
+    db---|*..1|psy
+    bhd---|*..1|psyr
+    dw---|*..1|gen
+    end
+
+
+
+```
+
+#### Class Diagram
+
+```mermaid
+classDiagram
+
+BaseDeviceComponent <|-- FastrakComponent
+DeviceBackend <|-- FastrakDeviceBackend
+BaseResponse <|-- FastrakResponse
+BaseResponseDevice <|-- FastrakHardwareDevice
+FastrakWrapper --> FastrakHardwareDevice 
+FastrakResponse--> FastrakHardwareDevice 
+FastrakDeviceBackend --> FastrakComponent 
+FastrakComponent --> FastrakWrapper
+
+
+class FastrakWrapper {
++ int status
++ bool is\_streaming
+- init(device, outputDir) 
++ reset(outputDir) 
++ dispatchMessages() 
++ startup() 
++ startStream() 
++ endStream() 
++ saveRecording(thisExp, baseDir)
+}
+
+class FastrakHardwareDevice {
++ bool is\_locked
+- init() 
+- getStation(station) 
+- getBaud(baud)
++ isSameDevice(other) 
++ getAvailableDevices()
++ dispatchMessages(clear)
++ startup() 
++ clearBuffer() 
++ startStream() 
++ endStream() 
++ lock() 
++ unlock() 
+}
+
+class FastrakResponse {
+}
+
+class FastrakDeviceBackend {
+- init(profile) 
++ writeDeviceCode(buff) 
+}
+
+class FastrakComponent {
+- init(exp, parentName, name, startType, startVal, stopType, stopVal, deviceLabel)
+- writeJinjaCode(buff , params, tmpltSource) 
+- blockComment(buff , content) 
++ writeStartCode(buff)
++ writeInitCode(buff) 
++ writeRoutineStartCode(buff) 
++ writeFrameCode(buff) 
++ writeRoutineEndCode(buff) 
+}
+
+```
