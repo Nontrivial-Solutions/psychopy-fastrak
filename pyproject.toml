@@ -5,13 +5,28 @@ description = """This repository contains a [PsychoPy](https://PsychoPy.org/) pl
         from a [Fastrak](https://polhemus.com/all-trackers/fastrak) tracking device. 
         """
 readme = "docs/README.md"
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = [
+  "fastrakserialdriver>=0.2.1",
+  "jinja2>=3.1.6",
+  "psychopy-lib>=2026.1.3",
+]
 dynamic = ["version"]  # Remove any static version = "..." line
+
+[project.entry-points."psychopy.experiment.components"]
+# if you want a Component to appear in the "Components" panel, add its class here
+FastrakComponent = "psychopy_fastrak.components.fastrakComponent:FastrakComponent"
+FastrakDeviceBackend = "psychopy_fastrak.components.fastrakComponent:FastrakDeviceBackend"
+
+[project.entry-points."psychopy.hardware"]
+# if you want something to be importable from psychopy.hardware, add it here
+FastrakHardwareDevice = "psychopy_fastrak.hardware:FastrakHardwareDevice"
+FastrakResponse = "psychopy_fastrak.hardware:FastrakResponse"
 
 [dependency-groups]
 dev = [
   "cairosvg>=2.9.0",
+  "ciqar>=0.2.0",
   "fake-bpy-module>=20260501",
   "griffe-typingdoc>=0.3.1",
   "markdown-gfm-admonition @ git+https://github.com/Joecstarr/markdown-gfm-admonition",
@@ -38,7 +53,6 @@ dev = [
   "pytest-mock>=3.15.1",
   "pytest-reportlog>=1.0.0",
   "reloadserver>=1.0.0",
-  "ty>=0.0.34",
 ]
 
 [build-system]
@@ -49,16 +63,21 @@ build-backend = "hatchling.build"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["psychopy_fastrak"]
+
+[tool.jinja-lsp]
+templates = "./templates"
+backend = ["./psychopy_fastrak/components/fastrakComponent/"]
 
 [tool.pytest.ini_options]
-pythonpath = [".", "src"]
+pythonpath = [".", "psychopy_fastrak"]
 
 [tool.ruff]
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "space"
 docstring-code-format = true
+docstring-code-line-length = 90
 
 [tool.ruff.lint]
 select = [

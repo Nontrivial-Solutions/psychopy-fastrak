@@ -41,7 +41,7 @@ live: bootstrap
     
 # Run tombi 
 do-tombi:
-    tombi format src 
+    tombi format psychopy_fastrak 
     tombi format docs 
     tombi format ./pyproject.toml 
     tombi format ./.rumdl.toml 
@@ -56,15 +56,6 @@ do-rumdl:
     rumdl fmt docs
 
 ##################################################################################################
-####### ruff format ##########################################################################
-##################################################################################################
-
-# Run ruff 
-do-ruff:
-    ruff check --fix src 
-    ruff format src 
-
-##################################################################################################
 ####### check everything #########################################################################
 ##################################################################################################
 check-todo:
@@ -74,6 +65,32 @@ check-todo:
     fi
     echo "👍 Found no todo"
     exit 0
+
+
+##################################################################################################
+####### ruff format ##########################################################################
+##################################################################################################
+
+# Run ruff 
+do-ruff:
+    ruff check --fix psychopy_fastrak 
+    ruff format psychopy_fastrak 
+
+# Generate warnings from ruff
+warning-ruff:
+    -ruff check psychopy_fastrak --output-format json -o .build/ruff/ruff.json | ciqar -r ruff:.build/ruff/ruff.json -s psychopy_fastrak -o .build/ruff
+
+# Cyclically Generate warnings from ruff 
+c-warning-ruff:
+    -watch -n 3 just warning-ruff
+
+
+# Server ruff results
+[working-directory: '.build/ruff']
+serve-ruff: warning-ruff
+    @echo "🚀 Check port 1315"
+    python -m reloadserver 1315
+
 ##################################################################################################
 ####### check everything #########################################################################
 ##################################################################################################

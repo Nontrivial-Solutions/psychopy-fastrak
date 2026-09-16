@@ -6,7 +6,7 @@ authors:
 
 A PsychoPy experiment is a generated python script, which includes all code (hardware, stimulus,
 response, storage, etc.) needed for the experiment. A PsychoPy experiment script can be broken into
-the following phases, each is executed atomically as described by [Figure 1][fig1-lcoae].
+the following phases, each is executed atomically as described by [Figure 1][explife-fig1-lcoae].
 
 ```mermaid
 stateDiagram-v2
@@ -22,7 +22,7 @@ stateDiagram-v2
 ```
 
 /// caption
-[](){#fig1-lcoae}
+[](){#explife-fig1-lcoae}
 Figure 1: Life cycle of an experiment
 ///
 
@@ -65,7 +65,7 @@ stateDiagram-v2
 ```
 
 /// caption
-[](){#fig2-lcoaes}
+[](){#explife-fig2-lcoaes}
 Figure 2: Life cycle of an experiment setup
 ///
 
@@ -73,8 +73,8 @@ Figure 2: Life cycle of an experiment setup
 
 The run state is the bread and butter of a PsychoPy experiment, contains the "functional"
 experimental code. The run state itself is broken in to a number of states as seen in
-[Figure 3][fig3-lcotrs]. These states serve as locations where a [component][DD_COMP] can inject
-code during the generation phase of experiment creation.
+[Figure 3][explife-fig3-lcotrs]. These states serve as locations where a [component][DD_COMP] can
+inject code during the generation phase of experiment creation.
 
 ```mermaid
 stateDiagram-v2
@@ -124,7 +124,7 @@ stateDiagram-v2
 ```
 
 /// caption
-[](){#fig3-lcotrs}
+[](){#explife-fig3-lcotrs}
 Figure 3: Life cycle of the run state
 ///
 
@@ -156,12 +156,12 @@ the experiment has been marked started.
 
 ### Routine Flow
 
-The routine flow, as seen in [Figure 4][fig4-flow], is a "queue" (first in first out) of configured
-routines for the experiment.
+The routine flow, as seen in [Figure 4][explife-fig4-flow], is a "queue" (first in first out) of
+configured routines for the experiment.
 
 ![flow](./flow.png)
 /// caption
-[](){#fig4-flow}
+[](){#explife-fig4-flow}
 Figure 4: The `Flow` pane from [PsychoPy Studio](https://psychopy.org/about/psychopystudio.html).
 ///
 
@@ -180,11 +180,11 @@ Each routine configured for an experiment can be modeled as a simple
 [event loop](https://en.wikipedia.org/wiki/Event_loop). Within the event loop components are polled
 and potentially triggered each [frame][DD_FRM]. Configured components are processed individually in
 the order configured in [PsychoPy Studio](https://psychopy.org/about/psychopystudio.html), see
-[Figure 5][fig5-order].
+[Figure 5][explife-fig5-order].
 
 ![order](./order.png)
 /// caption
-[](){#fig5-order}
+[](){#explife-fig5-order}
 Figure 5: The component configuration of a PsychoPy routine. When the routine is executed polling
 will happen in this order: 1. fastrak, 2. fastrak2, 3. ledstrip. 
 ///
@@ -204,9 +204,9 @@ will happen in this order: 1. fastrak, 2. fastrak2, 3. ledstrip.
 ###### First Frame
 
 The "first frame" stage allows for components to inject code to be run on the first frame that the
-component should be active. For example, in [Figure 5][fig5-order] fastrak2 will have its "first
-frame" when the frames have been processed for 2 seconds. For the other components, `fastrak` and
-`ledstrip`, the "first frame" will be the 0 second frame (overall first frame of the routine).
+component should be active. For example, in [Figure 5][explife-fig5-order] fastrak2 will have its
+"first frame" when the frames have been processed for 2 seconds. For the other components, `fastrak`
+and `ledstrip`, the "first frame" will be the 0 second frame (overall first frame of the routine).
 During the first frame stage the component is marked as "active".
 
 ###### Active Frame
@@ -217,9 +217,9 @@ is marked as active.
 ###### Last Frame
 
 The "last frame" stage allows for components to inject code to be run on the last frame that the
-component should be active. For example, in [Figure 5][fig5-order] fastrak2 will have its "last
-frame" when the frames have been processed for 4 seconds. For the other components, `fastrak` and
-`ledstrip`, the "last frame" will be at the 1 second frame and the 2 second frame respectively.
+component should be active. For example, in [Figure 5][explife-fig5-order] fastrak2 will have its
+"last frame" when the frames have been processed for 4 seconds. For the other components, `fastrak`
+and `ledstrip`, the "last frame" will be at the 1 second frame and the 2 second frame respectively.
 During the first frame stage the component is marked as "active".
 
 #### Routine End

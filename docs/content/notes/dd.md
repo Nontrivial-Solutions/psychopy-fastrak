@@ -45,7 +45,7 @@ authors:
 > [!definition] "Configurator[](){#DD_CFG}"
 >
 > Also called a ["builder"](https://psychopy.org/builder/index.html), used for configuring
-> [experiments][DD_TRIAL].
+> [experiments][DD_EXP].
 
 > [!definition] "Component[](){#DD_COMP}"
 >

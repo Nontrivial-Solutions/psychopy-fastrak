@@ -53,6 +53,7 @@ extra_javascript:
 
 watch:
     - docs
+    - psychopy_fastrak
 
 plugins:
     - search:
@@ -72,7 +73,9 @@ plugins:
                           - serial
                       docstring_section_style: spacy
     - api-autonav:
-          modules: ["./src/", "./test"]
+          modules: ["./psychopy_fastrak/"]
+          nav_section_title: "Implementation Reference"
+          api_root_uri: "reference"
     - awesome-nav
 markdown_extensions:
     - attr_list
