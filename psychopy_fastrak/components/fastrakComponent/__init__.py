@@ -154,7 +154,7 @@ class FastrakComponent(BaseDeviceComponent):
     def writeStartCode(self, buff):
         """Write code that a component needs at the start of an experiment.
 
-        Reference the [experiment life cycle](/content/notes/explifecycle).
+        Reference the [experiment life cycle](/content/notes/0000_exp_lifecycle).
 
         Parameters
         ----------
@@ -167,7 +167,7 @@ class FastrakComponent(BaseDeviceComponent):
     def writeInitCode(self, buff: IndentingBuffer):
         """Write code that a component needs at the init of an experiment.
 
-        Reference the [experiment life cycle](/content/notes/explifecycle).
+        Reference the [experiment life cycle](content/notes/0000_exp_lifecycle).
 
         Parameters
         ----------
@@ -180,7 +180,7 @@ class FastrakComponent(BaseDeviceComponent):
     def writeRoutineStartCode(self, buff: IndentingBuffer):
         """Write code that a component needs at the start of a routine.
 
-        Reference the [experiment life cycle](/content/notes/explifecycle).
+        Reference the [experiment life cycle](content/notes/0000_exp_lifecycle).
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class FastrakComponent(BaseDeviceComponent):
     def writeFrameCode(self, buff: IndentingBuffer):
         """Write code that a component needs during a frame of a routine.
 
-        Reference the [experiment life cycle](/content/notes/explifecycle).
+        Reference the [experiment life cycle](content/notes/0000_exp_lifecycle).
 
         Parameters
         ----------

@@ -17,13 +17,13 @@ represent/contain metadata for components before they are generated into an expe
 
 ![components](./comp.png)
 /// caption
-[](){#fig1-cfgcomp}
+[](){#lifespan-fig1-cfgcomp}
 Figure 1: List of components available in the configurator  
 ///
 
 ![order](./order.png)
 /// caption
-[](){#fig2-order}
+[](){#lifespan-fig2-order}
 Figure 2: The component configuration of a PsychoPy routine. Each represents a specific instance of
 a component object. Each instance contains individually specific metadata. 
 ///
@@ -39,7 +39,7 @@ Once an object is created it can be modified within the component option menu (F
 
 ![component options](./options.png)
 /// caption
-[](){#fig3-options}
+[](){#lifespan-fig3-options}
 Figure 3: Configuration options  
 ///
 
@@ -59,18 +59,18 @@ Post generation components are the "functional" components within an experiment 
 Within an experiment script a component follows the general lifespan seen in the
 [experiment life cycle](../0000_exp_lifecycle). The only important edge case to note for the life of
 a component in this context is the reuse of names (discussed in
-[ADR 00004](../../madr/00004_reuse.md)). As seen in [Figure 4][fig4-flow], a PsychoPy experiment
-flow can contain multiple instances of the same routine (looped or not).  
+[ADR 00004](../../madr/00004_reuse.md)). As seen in [Figure 4][lifespan-fig4-flow], a PsychoPy
+experiment flow can contain multiple instances of the same routine (looped or not).  
 
 ![Flow](./flow.png)
 /// caption
-[](){#fig4-flow}
+[](){#lifespan-fig4-flow}
 Figure 4: Experiment flow containing loops and reused routines 
 ///
 
-When the routine seen in [Figure 4][fig4-flow] is generated into a PsychoPy experiment each instance
-of `trial` generates the same experimental code. In practice this means that each instance of
-`trial` uses the exact same variable names with zero encapsulation.
+When the routine seen in [Figure 4][lifespan-fig4-flow] is generated into a PsychoPy experiment each
+instance of `trial` generates the same experimental code. In practice this means that each instance
+of `trial` uses the exact same variable names with zero encapsulation.
 
 > [!Note]
 >
