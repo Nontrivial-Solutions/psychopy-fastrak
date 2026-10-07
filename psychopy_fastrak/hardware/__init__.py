@@ -178,7 +178,7 @@ class FastrakHardwareDevice(BaseResponseDevice):
         """
         value = None
         if self._is_setup:
-            value = (self._ftd.lastPosition,)
+            value = self._ftd.lastPosition
 
         message = FastrakResponse(
             logging.defaultClock.getTime(),
