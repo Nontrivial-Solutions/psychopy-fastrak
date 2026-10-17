@@ -5,7 +5,7 @@ site_description: >
     from a [six degrees of freedom](https://en.wikipedia.org/wiki/Six_degrees_of_freedom) tracking
     device.
 columns:
-site_url: https://psychopyfastrak.nontrivialsolutions.com/
+site_url: https://psychopyfastrak.nontrivialsolutions.org/
 theme:
     name: material
     logo: infra/assets/logo.svg
